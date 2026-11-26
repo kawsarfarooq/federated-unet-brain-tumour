@@ -14,6 +14,35 @@ FIGURES = ROOT / "figures"
 COLORS = {"blue": "#dcecf9", "green": "#dff2e6", "orange": "#fff0da", "purple": "#ece5f7"}
 
 
+def badges():
+    """Create local SVG badges with font-independent text paths and vector icons."""
+    from matplotlib.patches import Rectangle, Polygon
+    plt.rcParams["svg.fonttype"] = "path"
+    plt.rcParams["font.family"] = "DejaVu Sans"
+    folder=FIGURES/"badges"
+    folder.mkdir(exist_ok=True)
+    for name,label,color,width in [
+        ("python","Python 3.12","#356a95",1.4),
+        ("tensorflow","TensorFlow 2.16.2","#b95a12",1.9),
+        ("hardware","CPU / NVIDIA GPU","#5f4b8b",2.0),
+        ("tests","Automated tests","#27734c",1.8),
+    ]:
+        fig,ax=plt.subplots(figsize=(width,.30))
+        fig.subplots_adjust(0,0,1,1)
+        fig.patch.set_facecolor(color)
+        ax.set_xlim(0,width);ax.set_ylim(0,.3);ax.axis("off")
+        if name == "tests":
+            ax.plot([.08,.12,.21],[.15,.10,.21],color="white",lw=1.8)
+        else:
+            ax.add_patch(Rectangle((.09,.095),.12,.12,fill=False,edgecolor="white",lw=1))
+            for x in [.12,.18]:
+                ax.plot([x,x],[.07,.095],color="white",lw=1)
+                ax.plot([x,x],[.215,.24],color="white",lw=1)
+        ax.text(.29,.15,label,ha="left",va="center",color="white",fontsize=8.5,weight="normal")
+        fig.savefig(folder/f"{name}.svg",facecolor=color,metadata={"Date":None})
+        plt.close(fig)
+
+
 def methodology():
     fig, ax = plt.subplots(figsize=(15, 9))
     ax.set_xlim(0, 15); ax.set_ylim(0, 9); ax.axis("off")
@@ -106,8 +135,8 @@ if __name__ == "__main__":
     parser.add_argument("--dataset",type=Path)
     options=parser.parse_args()
     FIGURES.mkdir(exist_ok=True)
-    methodology(); baseline_comparison()
+    badges(); methodology(); baseline_comparison()
     if options.dataset: dataset_example(options.dataset)
-    for svg in FIGURES.glob("*.svg"):
+    for svg in FIGURES.rglob("*.svg"):
         svg.write_text("\n".join(line.rstrip() for line in svg.read_text(encoding="utf-8").splitlines()) + "\n", encoding="utf-8")
     print(f"Figures saved to {FIGURES}")

@@ -11,7 +11,7 @@ def main(argv=None):
     parser.add_argument("--cache", type=Path, required=True)
     parser.add_argument("--mode", choices=["smoke", "full"], default="smoke")
     parser.add_argument("--device", choices=["cpu", "gpu"], default="cpu")
-    parser.add_argument("--gpu", help="One physical GPU index or UUID")
+    parser.add_argument("--gpu", help="GPU index or UUID (default: device 0 or CUDA_VISIBLE_DEVICES)")
     parser.add_argument("--gpu-memory", type=int, default=2560, help="TensorFlow memory cap in MiB")
     parser.add_argument("--clients", default=None, help="Comma-separated client counts; full default: 2,4,8")
     parser.add_argument("--width", type=int)
@@ -38,7 +38,7 @@ def main(argv=None):
     if options.image_size % (2 ** options.depth):
         parser.error("Image size must be divisible by 2**depth")
     if options.device == "gpu":
-        selected = options.gpu or os.environ.get("CUDA_VISIBLE_DEVICES", "")
+        selected = options.gpu or os.environ.get("CUDA_VISIBLE_DEVICES", "0")
         if not selected or "," in selected or selected == "-1":
             parser.error("Choose exactly one GPU using --gpu or CUDA_VISIBLE_DEVICES")
         os.environ["CUDA_VISIBLE_DEVICES"] = selected

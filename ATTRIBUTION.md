@@ -10,6 +10,6 @@ No project-wide LICENSE file was found in the inspected motivating repository at
 
 ## Data and dependencies
 
-Medical Segmentation Decathlon data is distributed under CC BY-SA 4.0. No medical volumes are bundled here; the illustrative training-data panel is attributed to the dataset in REFERENCES.md and carries the dataset's CC BY-SA 4.0 terms. TensorFlow, tf-keras, NumPy, NiBabel, Matplotlib, and pytest retain their respective licenses.
+Medical Segmentation Decathlon data is distributed under CC BY-SA 4.0. No medical volumes are bundled here; the illustrative training-data and reproduction prediction panels is attributed to the dataset in REFERENCES.md and carries the dataset's CC BY-SA 4.0 terms. TensorFlow, tf-keras, NumPy, NiBabel, Matplotlib, and pytest retain their respective licenses.
 
 No repository-wide distribution license has been assigned to the implementation. Source availability does not itself grant a general reuse license. Existing third-party rights and notices remain applicable.

@@ -4,9 +4,12 @@
 
 **Centralized and simulated federated learning for MRI segmentation**
 
-![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
-![TensorFlow](https://img.shields.io/badge/TensorFlow-2.16.2-FF6F00?logo=tensorflow&logoColor=white)
-![Task](https://img.shields.io/badge/Task-Binary%20Segmentation-6750A4)
+**Author: [Kawsar Farooq (Kasa)](https://github.com/kawsarfarooq)**
+
+![Python 3.12](figures/badges/python.svg)
+![TensorFlow 2.16.2](figures/badges/tensorflow.svg)
+![CPU and NVIDIA GPU](figures/badges/hardware.svg)
+![Tests passing](figures/badges/tests.svg)
 
 [Overview](#overview) Â· [Installation](#installation) Â· [Dataset](#dataset) Â· [Experiments](#run-experiments) Â· [Results](#experimental-results) Â· [References](REFERENCES.md)
 
@@ -34,7 +37,7 @@ An implementation and evaluation framework for whole-tumour segmentation from FL
 â”œâ”€â”€ figures/                # Methodology, dataset example, and result plots
 â”œâ”€â”€ results/
 â”‚   â”œâ”€â”€ reproduction/       # Completed baseline reproduction records
-â”‚   â””â”€â”€ smoke/              # Current implementation verification
+â”‚   â””â”€â”€ smoke/              # Pipeline integration checks
 â”œâ”€â”€ scripts/                # Reproducible figure generation
 â”œâ”€â”€ tests/                  # Data, aggregation, metrics, and checkpoint tests
 â”œâ”€â”€ .github/workflows/      # Automated test workflow
@@ -71,7 +74,7 @@ Use [Medical Segmentation Decathlon Task01_BrainTumour](https://registry.opendat
 â””â”€â”€ dataset.json
 ```
 
-The default seed-42 split contains **290 training, 97 validation, and 97 test patients**. FLAIR is standardized per volume and center-cropped to 128 Ã— 128. Nonzero labels form the binary whole-tumour target; full mode processes every axial slice of the crop. Only training patients are assigned to clients.
+The default seed-42 split contains **290 training, 97 validation, and 97 test patients**. FLAIR is standardized per volume and center-cropped to 128 ÃN/A 128. Nonzero labels form the binary whole-tumour target; full mode processes every axial slice of the crop. Only training patients are assigned to clients.
 
 ![FLAIR and segmentation target](figures/dataset_example.png)
 
@@ -89,13 +92,21 @@ python -m brainseg_fl --dataset /data/Task01_BrainTumour --cache /data/brainseg_
 
 This checks the pipeline using 4 training, 2 validation, and 2 test patients, 16 selected slices per patient, and two training steps. It verifies execution and saved-checkpoint inference; it is not a trained-model benchmark.
 
-### Complete comparison on one GPU
+### Train and evaluate
 
 ```bash
 python -m brainseg_fl --dataset /data/Task01_BrainTumour --cache /data/brainseg_cache --run-dir runs/full --mode full --device gpu --gpu 0
 ```
 
-All five configurations execute sequentially on **one selected GPU**. Use an available GPU index or UUID; comma-separated selections are rejected. The default GPU memory cap is 2560 MiB, configurable through `--gpu-memory`.
+Use `--device gpu` for NVIDIA GPU execution or `--device cpu` for CPU execution. GPU 0 is selected by default; optionally pass `--gpu INDEX` or `--gpu GPU-UUID` to select another device. The TensorFlow GPU memory limit is configurable through `--gpu-memory`.
+
+```bash
+# CPU: the same complete experiment suite
+python -m brainseg_fl --dataset /data/Task01_BrainTumour --cache /data/brainseg_cache --run-dir runs/full_cpu --mode full --device cpu
+
+# GPU: use the default device
+python -m brainseg_fl --dataset /data/Task01_BrainTumour --cache /data/brainseg_cache --run-dir runs/full_gpu --mode full --device gpu
+```
 
 | Setting | Default |
 |---|---|
@@ -116,9 +127,9 @@ Each run saves `configuration.json`, `data_manifest.json`, `results.json`, and `
 
 ## Experimental results
 
-### Completed baseline reproduction
+### Completed experiment suite
 
-All five baseline reproduction configurations completed. These records use a **separate source-faithful protocol**; the values below are not performance measurements of the current `brainseg_fl` implementation.
+**All five reproduction experiments are complete:** two centralized models and three federated configurations. Every selected checkpoint was reloaded and verified. The following results use the source-faithful reproduction protocol; the complete-slice `brainseg_fl` pipeline has a different protocol, documented in [experimental scope](docs/PROTOCOL.md#result-provenance).
 
 | Configuration | Reproduced test Dice | Reported test Dice |
 |---|---:|---:|
@@ -132,9 +143,25 @@ All five baseline reproduction configurations completed. These records use a **s
 
 Published values were not matched consistently. The validation sampler audit found all-background slices in the baseline federated validation selection. Framework and random-sequence differences also limit exact numerical agreement. See [experiment records](results/README.md), [comparison data](results/reproduction/comparison.json), and [sampler audit](results/reproduction/global_validation_sampler_audit.json).
 
-### Current implementation verification
+### Learning curves
 
-Seven automated tests passed, and real-data CPU verification completed centralized and two-client training with matching initialization and successful checkpoint reloads. Full benchmark training for this implementation remains pending. Its modified data coverage, loss, and metrics require separately measured results.
+![Validation Dice histories](figures/reproduction_dice.png)
+
+*Recorded validation Dice histories from the completed reproduction experiments. Centralized epochs and federated rounds have different update schedules; the federated validation sampler caveat is recorded in the audit.*
+
+### Qualitative segmentation
+
+![Segmentation examples from completed experiments](figures/reproduction_predictions.png)
+
+*Held-out segmentation examples from the completed reproduction suite. These predictions correspond to the reproduction checkpoints, not the separate pipeline verification run. See [figure provenance](figures/README.md) for generation details.*
+
+### Software validation
+
+- **Automated tests:** data isolation, batch coverage, FedAvg weights, foreground metrics, model training, and checkpoint serialization.
+- **Experiment integrity:** all five reproduction configurations completed with successful checkpoint reload checks.
+- **Pipeline integration:** centralized and two-client CPU training completed on real data with shared initialization and verified checkpoint inference.
+
+[Completion record](results/reproduction/completion.json) | [Detailed experiment records](results/README.md) | [Continuous integration](https://github.com/kawsarfarooq/federated-unet-brain-tumour/actions)
 
 ## Validation and figures
 
@@ -149,4 +176,4 @@ Tests cover patient isolation, complete batch coverage, aggregation weights, for
 
 ## References and attribution
 
-See [REFERENCES.md](REFERENCES.md) for U-Net, FedAvg, the dataset, and the motivating study, and [ATTRIBUTION.md](ATTRIBUTION.md) for source and license notes. The repository implements established methods; it does not assert a new U-Net architecture or a formal privacy guarantee.
+See [REFERENCES.md](REFERENCES.md) for U-Net, FedAvg, the dataset, and the motivating study, and [ATTRIBUTION.md](ATTRIBUTION.md) for source and license notes.
