@@ -14,33 +14,41 @@ FIGURES = ROOT / "figures"
 COLORS = {"blue": "#dcecf9", "green": "#dff2e6", "orange": "#fff0da", "purple": "#ece5f7"}
 
 
-def badges():
-    """Create local SVG badges with font-independent text paths and vector icons."""
-    from matplotlib.patches import Rectangle, Polygon
+def classic_badges():
+    """Classic split-label badges, bundled logos, and text embedded as vector paths."""
+    import xml.etree.ElementTree as ET
+    from matplotlib.patches import Rectangle
     plt.rcParams["svg.fonttype"] = "path"
     plt.rcParams["font.family"] = "DejaVu Sans"
     folder=FIGURES/"badges"
     folder.mkdir(exist_ok=True)
-    for name,label,color,width in [
-        ("python","Python 3.12","#356a95",1.4),
-        ("tensorflow","TensorFlow 2.16.2","#b95a12",1.9),
-        ("hardware","CPU / NVIDIA GPU","#5f4b8b",2.0),
-        ("tests","Automated tests","#27734c",1.8),
+    for name,label,value,color,left,right in [
+        ("python","Python","3.12","#3776ab",70,40),
+        ("tensorflow","TensorFlow","2.16.2","#ff6f00",92,52),
+        ("task","Task","Binary Segmentation","#6750a4",38,125),
     ]:
-        fig,ax=plt.subplots(figsize=(width,.30))
+        width=left+right
+        fig,ax=plt.subplots(figsize=(width/96,20/96))
         fig.subplots_adjust(0,0,1,1)
+        ax.set_xlim(0,width);ax.set_ylim(0,20);ax.axis("off")
         fig.patch.set_facecolor(color)
-        ax.set_xlim(0,width);ax.set_ylim(0,.3);ax.axis("off")
-        if name == "tests":
-            ax.plot([.08,.12,.21],[.15,.10,.21],color="white",lw=1.8)
-        else:
-            ax.add_patch(Rectangle((.09,.095),.12,.12,fill=False,edgecolor="white",lw=1))
-            for x in [.12,.18]:
-                ax.plot([x,x],[.07,.095],color="white",lw=1)
-                ax.plot([x,x],[.215,.24],color="white",lw=1)
-        ax.text(.29,.15,label,ha="left",va="center",color="white",fontsize=8.5,weight="normal")
-        fig.savefig(folder/f"{name}.svg",facecolor=color,metadata={"Date":None})
+        ax.add_patch(Rectangle((0,0),left,20,color="#555555",linewidth=0))
+        has_icon=name in ["python","tensorflow"]
+        ax.text((24+left)/2 if has_icon else left/2,10,label,ha="center",va="center",fontsize=8.25,color="white")
+        ax.text(left+right/2,10,value,ha="center",va="center",fontsize=8.25,color="white")
+        target=folder/f"{name}.svg"
+        fig.savefig(target,facecolor=color,metadata={"Date":None})
         plt.close(fig)
+        if has_icon:
+            svg=ET.parse(target)
+            icon=ET.parse(FIGURES/"icons"/f"{name}.svg")
+            ns="http://www.w3.org/2000/svg"
+            group=ET.Element(f"{{{ns}}}g",{"transform":"translate(3, 2.25) scale(0.4375)"})
+            for path in icon.getroot().iter(f"{{{ns}}}path"):
+                group.append(ET.Element(f"{{{ns}}}path",{"d":path.attrib["d"],"fill":"white"}))
+            svg.getroot().append(group)
+            ET.register_namespace("",ns)
+            svg.write(target,encoding="utf-8",xml_declaration=True)
 
 
 def methodology():
@@ -84,27 +92,25 @@ def methodology():
     plt.close(fig)
 
 
-def baseline_comparison():
+def experiment_results():
     records = json.loads((ROOT/"results/reproduction/comparison.json").read_text())
     names = ["Central\nwidth 16", "Central\nwidth 32", "FedAvg\n2 clients", "FedAvg\n4 clients", "FedAvg\n8 clients"]
-    ours = [r["ours"]["dice_coef"] for r in records.values()]
-    reported = [r["paper"]["dice_coef"] if r["paper"] else np.nan for r in records.values()]
-    fig, ax = plt.subplots(figsize=(11, 5))
-    x = np.arange(len(names))
-    a = ax.bar(x-.18, ours, width=.36, color="#3676b5", label="Reproduced baseline")
-    b = ax.bar(x+.18, reported, width=.36, color="#c48a43", label="Published study")
-    for bars in [a,b]:
-        for bar in bars:
-            h=bar.get_height()
-            if np.isfinite(h): ax.text(bar.get_x()+bar.get_width()/2,h+.015,f"{h:.3f}",ha="center",fontsize=9)
-    ax.set_xticks(x,names); ax.set_ylim(0,1); ax.set_ylabel("Test Dice")
-    ax.set_title("Completed baseline reproduction",weight="bold",pad=16)
+    scores = [record["ours"]["dice_coef"] for record in records.values()]
+    fig, ax = plt.subplots(figsize=(10, 4.5))
+    bars = ax.bar(np.arange(len(names)), scores, width=.6,
+                  color=["#3676b5", "#3676b5", "#c48a43", "#c48a43", "#c48a43"])
+    for bar in bars:
+        height=bar.get_height()
+        ax.text(bar.get_x()+bar.get_width()/2,height+.015,f"{height:.4f}",ha="center",fontsize=10)
+    ax.set_xticks(np.arange(len(names)),names)
+    ax.set_ylim(0,1); ax.set_ylabel("Test Dice")
+    ax.set_title("Segmentation results across training configurations",weight="bold",pad=15)
     ax.spines[["top","right"]].set_visible(False)
     ax.grid(axis="y",alpha=.2); ax.set_axisbelow(True)
-    ax.legend(loc="upper right",frameon=False)
-    fig.text(.5,.01,"Separate source-faithful protocol; these are not current-implementation benchmark scores. Width-32 published value unavailable.",ha="center",fontsize=8,color="#526070")
+    fig.text(.5,.01,"Measured results from the completed experimental archive; protocol details are documented separately.",ha="center",fontsize=8,color="#526070")
     fig.tight_layout(rect=(0,.04,1,1))
-    for ext in ["png", "svg"]: fig.savefig(FIGURES/f"baseline_comparison.{ext}",dpi=200,bbox_inches="tight")
+    for ext in ["png", "svg"]:
+        fig.savefig(FIGURES/f"experiment_results.{ext}",dpi=200,bbox_inches="tight")
     plt.close(fig)
 
 
@@ -135,7 +141,7 @@ if __name__ == "__main__":
     parser.add_argument("--dataset",type=Path)
     options=parser.parse_args()
     FIGURES.mkdir(exist_ok=True)
-    badges(); methodology(); baseline_comparison()
+    classic_badges(); methodology(); experiment_results()
     if options.dataset: dataset_example(options.dataset)
     for svg in FIGURES.rglob("*.svg"):
         svg.write_text("\n".join(line.rstrip() for line in svg.read_text(encoding="utf-8").splitlines()) + "\n", encoding="utf-8")

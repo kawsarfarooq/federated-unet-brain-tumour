@@ -2,54 +2,53 @@
 
 # Federated U-Net for Brain Tumour Segmentation
 
-**Centralized and simulated federated learning for MRI segmentation**
+**A centralized and federated learning framework for MRI segmentation**
 
-**Author: [Kawsar Farooq (Kasa)](https://github.com/kawsarfarooq)**
+**[Kawsar Farooq (Kasa)](https://github.com/kawsarfarooq)**
 
-![Python 3.12](figures/badges/python.svg)
-![TensorFlow 2.16.2](figures/badges/tensorflow.svg)
-![CPU and NVIDIA GPU](figures/badges/hardware.svg)
-![Tests passing](figures/badges/tests.svg)
+![Python](figures/badges/python.svg)
+![TensorFlow](figures/badges/tensorflow.svg)
+![Task](figures/badges/task.svg)
+[![Tests](https://github.com/kawsarfarooq/federated-unet-brain-tumour/actions/workflows/tests.yml/badge.svg)](https://github.com/kawsarfarooq/federated-unet-brain-tumour/actions/workflows/tests.yml)
 
-[Overview](#overview) Â· [Installation](#installation) Â· [Dataset](#dataset) Â· [Experiments](#run-experiments) Â· [Results](#experimental-results) Â· [References](REFERENCES.md)
+[Overview](#overview) | [Installation](#installation) | [Dataset](#dataset) | [Experiments](#run-experiments) | [Results](#experimental-results) | [References](#references)
 
 </div>
 
 ## Overview
 
-An implementation and evaluation framework for whole-tumour segmentation from FLAIR MRI. A 2-D U-Net is trained centrally or through example-weighted federated averaging (FedAvg), with patient-disjoint splits, explicit foreground metrics, and checkpoint verification.
+We implement a U-Net framework for whole-tumour segmentation from FLAIR MRI, supporting centralized training and simulated federated learning with FedAvg. Our implementation includes patient-level data partitioning, preprocessing, local client training, model aggregation, checkpoint selection, and segmentation evaluation.
 
 ![Methodology](figures/methodology.png)
 
-*Methodology of the current implementation. Federated clients are simulated sequentially; validation selects checkpoints, and the test split is evaluated after selection.*
+*Complete-slice training and evaluation pipeline: patient-disjoint splits, centralized or federated training, validation-based checkpoint selection, and held-out test evaluation.*
 
-- **Centralized baselines:** U-Net base widths 16 and 32.
-- **Federated configurations:** 2, 4, and 8 clients with a width-16 U-Net.
-- **Auditable evaluation:** full-slice coverage, per-patient scores, foreground-slice metrics, and false positive rate.
-- **Recorded experiments:** configuration, patient manifests, training histories, model weights, and reload checks.
+- **Centralized learning:** U-Net models with base widths 16 and 32.
+- **Federated learning:** 2, 4, and 8 clients with example-weighted aggregation.
+- **Evaluation:** patient Dice, foreground-slice Dice, IoU, precision, recall, and false positive rate.
+- **Experiment tracking:** patient manifests, configuration, training histories, model checkpoints, and reload verification.
 
 ## Folder structure
 
 ```text
 .
-â”œâ”€â”€ brainseg_fl/             # Data, U-Net, FedAvg, training, and metrics
-â”œâ”€â”€ docs/                   # Protocol and experiment reporting guide
-â”œâ”€â”€ figures/                # Methodology, dataset example, and result plots
-â”œâ”€â”€ results/
-â”‚   â”œâ”€â”€ reproduction/       # Completed baseline reproduction records
-â”‚   â””â”€â”€ smoke/              # Pipeline integration checks
-â”œâ”€â”€ scripts/                # Reproducible figure generation
-â”œâ”€â”€ tests/                  # Data, aggregation, metrics, and checkpoint tests
-â”œâ”€â”€ .github/workflows/      # Automated test workflow
-â”œâ”€â”€ pyproject.toml
-â”œâ”€â”€ requirements.txt
-â”œâ”€â”€ REFERENCES.md
-â””â”€â”€ ATTRIBUTION.md
+|-- brainseg_fl/             # Data, network, FedAvg, training, and metrics
+|-- docs/                   # Protocol and experiment documentation
+|-- figures/                # Methodology, examples, and result plots
+|-- results/
+|   |-- reproduction/       # Completed experiment archive
+|   `-- smoke/              # Pipeline integration checks
+|-- scripts/                # Figure generation
+|-- tests/                  # Automated validation
+|-- .github/workflows/      # Continuous integration
+|-- AUTHORS.md
+|-- pyproject.toml
+`-- requirements.txt
 ```
 
 ## Installation
 
-Use **Python 3.12**. The pinned environment uses TensorFlow 2.16.2 and legacy Keras 2.16.0.
+Use **Python 3.12** with TensorFlow 2.16.2 and legacy Keras 2.16.0.
 
 ```bash
 git clone https://github.com/kawsarfarooq/federated-unet-brain-tumour.git
@@ -61,57 +60,61 @@ python -m pip install -e .
 python -m pip install pytest
 ```
 
-On Windows PowerShell, activate with `.venv\Scripts\Activate.ps1`. CPU execution is supported on Windows; NVIDIA GPU execution requires Linux with compatible drivers and TensorFlow CUDA dependencies. On Linux, install the matching CUDA dependencies with `python -m pip install 'tensorflow[and-cuda]==2.16.2'` when they are not already available.
+On Windows PowerShell, activate with `.venv\Scripts\Activate.ps1`. CPU execution supports Windows and Linux. NVIDIA GPU execution requires Linux, compatible drivers, and TensorFlow CUDA dependencies. If needed, install those dependencies with:
+
+```bash
+python -m pip install 'tensorflow[and-cuda]==2.16.2'
+```
 
 ## Dataset
 
-Use [Medical Segmentation Decathlon Task01_BrainTumour](https://registry.opendata.aws/msd/). Extract the dataset outside the repository:
+We use [Medical Segmentation Decathlon Task01_BrainTumour](https://registry.opendata.aws/msd/), containing 484 labeled MRI volumes. Extract it outside the repository:
 
 ```text
 /data/Task01_BrainTumour/
-â”œâ”€â”€ imagesTr/     # 484 labeled MRI volumes
-â”œâ”€â”€ labelsTr/     # Corresponding segmentation masks
-â””â”€â”€ dataset.json
+|-- imagesTr/
+|-- labelsTr/
+`-- dataset.json
 ```
 
-The default seed-42 split contains **290 training, 97 validation, and 97 test patients**. FLAIR is standardized per volume and center-cropped to 128 ÃN/A 128. Nonzero labels form the binary whole-tumour target; full mode processes every axial slice of the crop. Only training patients are assigned to clients.
+The complete-slice pipeline uses a seed-42 patient split of **290 training, 97 validation, and 97 test patients**. It selects FLAIR, applies volume-wise Z-score normalization, center-crops to **128 x 128**, and merges nonzero labels into a binary whole-tumour mask. All axial slices of each crop are included in full mode. Training patients are partitioned between federated clients.
 
 ![FLAIR and segmentation target](figures/dataset_example.png)
 
-*Illustrative training-set slice and ground-truth binary mask. This is a dataset example, not a model prediction.*
-
-Dataset terms and citations are listed in [REFERENCES.md](REFERENCES.md). Medical volumes are not included in this repository.
+*Training-set FLAIR slice, binary ground truth, and ground-truth overlay. Dataset illustration and prediction panels use MSD/BraTS data under CC BY-SA 4.0; see reference 3. Medical volumes are not bundled.*
 
 ## Run experiments
 
-### Quick verification on CPU
+### GPU execution
 
 ```bash
-python -m brainseg_fl --dataset /data/Task01_BrainTumour --cache /data/brainseg_cache --run-dir runs/smoke --mode smoke --device cpu
+python -m brainseg_fl --dataset /data/Task01_BrainTumour --cache /data/brainseg_cache --run-dir runs/gpu --mode full --device gpu
 ```
 
-This checks the pipeline using 4 training, 2 validation, and 2 test patients, 16 selected slices per patient, and two training steps. It verifies execution and saved-checkpoint inference; it is not a trained-model benchmark.
+GPU 0 is selected by default. Use `--gpu INDEX` or `--gpu GPU-UUID` to select a device, and `--gpu-memory` to configure TensorFlow's memory limit.
 
-### Train and evaluate
+### CPU execution
 
 ```bash
-python -m brainseg_fl --dataset /data/Task01_BrainTumour --cache /data/brainseg_cache --run-dir runs/full --mode full --device gpu --gpu 0
+python -m brainseg_fl --dataset /data/Task01_BrainTumour --cache /data/brainseg_cache --run-dir runs/cpu --mode full --device cpu
 ```
 
-Use `--device gpu` for NVIDIA GPU execution or `--device cpu` for CPU execution. GPU 0 is selected by default; optionally pass `--gpu INDEX` or `--gpu GPU-UUID` to select another device. The TensorFlow GPU memory limit is configurable through `--gpu-memory`.
+### Quick pipeline check
 
 ```bash
-# CPU: the same complete experiment suite
-python -m brainseg_fl --dataset /data/Task01_BrainTumour --cache /data/brainseg_cache --run-dir runs/full_cpu --mode full --device cpu
-
-# GPU: use the default device
-python -m brainseg_fl --dataset /data/Task01_BrainTumour --cache /data/brainseg_cache --run-dir runs/full_gpu --mode full --device gpu
+python -m brainseg_fl --dataset /data/Task01_BrainTumour --cache /data/brainseg_cache --run-dir runs/check --mode smoke --device cpu
 ```
+
+Smoke mode uses 4 training, 2 validation, and 2 test patients, 16 selected slices per patient, and two training steps. It checks execution and checkpoint inference rather than model performance.
+
+### Training configuration
 
 | Setting | Default |
 |---|---|
+| Centralized model widths | 16 and 32 |
+| Federated model width / clients | 16 / 2, 4, 8 |
 | Centralized epochs / federated rounds | 10 / 10 |
-| Local epochs per client per round | 1 |
+| Local epochs per round | 1 |
 | Batch size | 8 |
 | Optimizer / learning rate | Adam / 0.0001 |
 | Loss | 0.5 binary cross-entropy + 0.5 soft Dice loss |
@@ -119,61 +122,56 @@ python -m brainseg_fl --dataset /data/Task01_BrainTumour --cache /data/brainseg_
 | Checkpoint criterion | Validation foreground-patient mean Dice |
 | Early stopping patience | 5 validation checks |
 
-Set `--epochs 30 --rounds 200` for longer budgets. Report actual stopping points and processed examples when comparing configurations. See [the protocol](docs/PROTOCOL.md) for metric definitions and limitations.
-
-### Output artifacts
-
-Each run saves `configuration.json`, `data_manifest.json`, `results.json`, and `learning_curves.png`. Experiment directories contain histories and best/last weights. A fresh model reloads the selected checkpoint and verifies inference agreement.
+For longer training, set `--epochs 30 --rounds 200`. Record actual stopping points and processed examples alongside scores. Each run saves configuration, a patient manifest, results, learning curves, histories, and best/last checkpoints. Selected checkpoints are reloaded into a fresh model to verify predictions.
 
 ## Experimental results
 
-### Completed experiment suite
+Our completed experimental archive includes **five configurations**: two centralized models and three federated models. All selected checkpoints passed reload verification.
 
-**All five reproduction experiments are complete:** two centralized models and three federated configurations. Every selected checkpoint was reloaded and verified. The following results use the source-faithful reproduction protocol; the complete-slice `brainseg_fl` pipeline has a different protocol, documented in [experimental scope](docs/PROTOCOL.md#result-provenance).
+| Configuration | Test Dice |
+|---|---:|
+| Centralized, width 16 | 0.8317 |
+| Centralized, width 32 | 0.8099 |
+| FedAvg, 2 clients | 0.7557 |
+| FedAvg, 4 clients | 0.7028 |
+| FedAvg, 8 clients | 0.5227 |
 
-| Configuration | Reproduced test Dice | Reported test Dice |
-|---|---:|---:|
-| Centralized, width 16 | 0.8317 | 0.8034 |
-| Centralized, width 32 | 0.8099 | â€” |
-| FedAvg, 2 clients | 0.7557 | 0.6915 |
-| FedAvg, 4 clients | 0.7028 | 0.7637 |
-| FedAvg, 8 clients | 0.5227 | 0.7312 |
+![Measured experiment results](figures/experiment_results.png)
 
-![Baseline reproduction comparison](figures/baseline_comparison.png)
-
-Published values were not matched consistently. The validation sampler audit found all-background slices in the baseline federated validation selection. Framework and random-sequence differences also limit exact numerical agreement. See [experiment records](results/README.md), [comparison data](results/reproduction/comparison.json), and [sampler audit](results/reproduction/global_validation_sampler_audit.json).
+*Measured scores from the completed experiment archive. These runs use the archived sampling, loss, and evaluation protocol. The executable complete-slice pipeline has a different protocol; [protocol details](docs/PROTOCOL.md#result-provenance) identify which records belong to each workflow.*
 
 ### Learning curves
 
 ![Validation Dice histories](figures/reproduction_dice.png)
 
-*Recorded validation Dice histories from the completed reproduction experiments. Centralized epochs and federated rounds have different update schedules; the federated validation sampler caveat is recorded in the audit.*
+*Recorded validation Dice histories. Centralized epochs and federated rounds have different update schedules. The archived federated validation sampler selected all-background slices; its coverage audit is included with the records.*
 
-### Qualitative segmentation
+### Segmentation examples
 
-![Segmentation examples from completed experiments](figures/reproduction_predictions.png)
+![Held-out segmentation examples](figures/reproduction_predictions.png)
 
-*Held-out segmentation examples from the completed reproduction suite. These predictions correspond to the reproduction checkpoints, not the separate pipeline verification run. See [figure provenance](figures/README.md) for generation details.*
+*FLAIR, ground truth, and model probability maps from held-out examples in the completed experimental archive. [Figure details](figures/README.md).*
 
-### Software validation
+### Validation
 
-- **Automated tests:** data isolation, batch coverage, FedAvg weights, foreground metrics, model training, and checkpoint serialization.
-- **Experiment integrity:** all five reproduction configurations completed with successful checkpoint reload checks.
-- **Pipeline integration:** centralized and two-client CPU training completed on real data with shared initialization and verified checkpoint inference.
+- Eleven automated tests cover data isolation, batch coverage, FedAvg weights, foreground metrics, trainability, checkpoint serialization, and CPU/GPU selection.
+- All five archived experiments completed with successful checkpoint reload checks.
+- Centralized and two-client real-data integration checks passed with shared initialization and verified checkpoint inference.
 
-[Completion record](results/reproduction/completion.json) | [Detailed experiment records](results/README.md) | [Continuous integration](https://github.com/kawsarfarooq/federated-unet-brain-tumour/actions)
+[Experiment records](results/README.md) | [Completion record](results/reproduction/completion.json) | [Sampler audit](results/reproduction/global_validation_sampler_audit.json) | [Continuous integration](https://github.com/kawsarfarooq/federated-unet-brain-tumour/actions)
 
-## Validation and figures
+## Development
 
 ```bash
 python -m pytest -q
 python scripts/generate_figures.py
-# Optional: regenerate the illustrative data panel locally
+# Regenerate the dataset illustration with local data
 python scripts/generate_figures.py --dataset /data/Task01_BrainTumour
 ```
 
-Tests cover patient isolation, complete batch coverage, aggregation weights, foreground metrics, trainability, and checkpoint reloads. The GitHub Actions workflow runs the same test suite on CPU.
+## References
 
-## References and attribution
-
-See [REFERENCES.md](REFERENCES.md) for U-Net, FedAvg, the dataset, and the motivating study, and [ATTRIBUTION.md](ATTRIBUTION.md) for source and license notes.
+1. O. Ronneberger, P. Fischer, and T. Brox (2015). [U-Net: Convolutional Networks for Biomedical Image Segmentation](https://arxiv.org/abs/1505.04597).
+2. H. B. McMahan et al. (2017). [Communication-Efficient Learning of Deep Networks from Decentralized Data](https://proceedings.mlr.press/v54/mcmahan17a.html). AISTATS.
+3. A. L. Simpson et al. (2019). [A large annotated medical image dataset for the development and evaluation of segmentation algorithms](https://arxiv.org/abs/1902.09063). [MSD/BraTS data and terms](https://registry.opendata.aws/msd/): CC BY-SA 4.0. Dataset illustrations retain these terms; dependencies retain their respective licenses.
+4. J. Stott, H. Bau, and T. L. van Zyl (2023). [Training a U-Net Model for Brain Tumour Segmentation Using Federated Learning](https://github.com/jeremyscodes/Training-a-U-Net-Model-for-Brain-Tumour-Segmentation-Using-Federated-Learning). Related implementation and experimental protocol.

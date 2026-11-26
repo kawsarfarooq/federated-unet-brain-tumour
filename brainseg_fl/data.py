@@ -1,7 +1,7 @@
 """Patient-separated data preparation and complete axial-slice traversal.
 
 Only FLAIR is read. Cached arrays are cropped and normalized inputs, rather
-than copies of all four MRI modalities. Dataset attribution: REFERENCES.md.
+than copies of all four MRI modalities. Dataset attribution: README.md#references.
 """
 from collections import OrderedDict
 import hashlib

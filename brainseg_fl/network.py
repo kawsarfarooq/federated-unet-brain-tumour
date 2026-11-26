@@ -1,6 +1,6 @@
 """A functional U-Net implementation of the published encoder/decoder method.
 
-Reference: Ronneberger, Fischer and Brox (2015); see REFERENCES.md.
+Reference: Ronneberger, Fischer and Brox (2015); see README.md#references.
 """
 import tensorflow as tf
 

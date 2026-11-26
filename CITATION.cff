@@ -1,9 +1,0 @@
-cff-version: 1.2.0
-message: "If you use this software, please cite it and the method and dataset references listed in REFERENCES.md."
-title: "Federated U-Net for Brain Tumour Segmentation: An Implementation and Evaluation Study"
-type: software
-authors:
-  - family-names: Farooq
-    given-names: Kawsar
-repository-code: "https://github.com/kawsarfarooq/federated-unet-brain-tumour"
-version: 0.1.0
