@@ -1,0 +1,136 @@
+[
+  {
+    "title": "Federated U-Net for Brain Tumour Segmentation: An Implementation and Evaluation Study",
+    "scope": "real-data smoke verification",
+    "full_dataset_evaluation": false,
+    "experiment": "central_w4",
+    "width": 4,
+    "clients": 0,
+    "model_parameters": 30293,
+    "completed_steps": 2,
+    "best_step": 1,
+    "training_examples_seen": 128,
+    "training_slice_count": 64,
+    "validation_coverage": {
+      "patients": 2,
+      "slices": 32,
+      "foreground_slices": 12
+    },
+    "test": {
+      "metrics": {
+        "loss": 0.7170747908291095,
+        "dice_micro": 0.014917851023082351,
+        "dice_patient_mean": 0.015138845534377374,
+        "dice_foreground_patients_mean": 0.015138845534377374,
+        "dice_foreground_slices_mean": 0.013931729295986454,
+        "dice_all_slices_mean": 0.0047890319454953435,
+        "iou_micro": 0.007514979181476592,
+        "precision_micro": 0.025118805159538356,
+        "recall_micro": 0.01060931899641577,
+        "false_positive_rate": 0.005551764598995193,
+        "patients": 2,
+        "slices": 32,
+        "foreground_patients": 2,
+        "foreground_slices": 11
+      },
+      "per_patient": [
+        {
+          "patient": "BRATS_278",
+          "tp": 26,
+          "fp": 1457,
+          "fn": 1783,
+          "tn": 258878,
+          "probability": 89562.95102442056,
+          "truth": 1809,
+          "intersection": 469.94042494893074,
+          "dice": 0.015795868772782502,
+          "soft_dice": 0.01029714854723691,
+          "foreground_present": true
+        },
+        {
+          "patient": "BRATS_350",
+          "tp": 48,
+          "fp": 1415,
+          "fn": 5118,
+          "tn": 255563,
+          "probability": 91309.91244517593,
+          "truth": 5166,
+          "intersection": 1227.6329966462217,
+          "dice": 0.014481822295972243,
+          "soft_dice": 0.02545962480596841,
+          "foreground_present": true
+        }
+      ]
+    },
+    "elapsed_seconds": 10.402202367782593,
+    "initial_weights_sha256": "2e5dc881b5a4ed618289b92cf0c2cf21148a005219d9054777c3c9def1df7eee",
+    "checkpoint_reload_verified": true
+  },
+  {
+    "title": "Federated U-Net for Brain Tumour Segmentation: An Implementation and Evaluation Study",
+    "scope": "real-data smoke verification",
+    "full_dataset_evaluation": false,
+    "experiment": "federated_2",
+    "width": 4,
+    "clients": 2,
+    "model_parameters": 30293,
+    "completed_steps": 2,
+    "best_step": 2,
+    "training_examples_seen": 128,
+    "training_slice_count": 64,
+    "validation_coverage": {
+      "patients": 2,
+      "slices": 32,
+      "foreground_slices": 12
+    },
+    "test": {
+      "metrics": {
+        "loss": 0.7181402770437724,
+        "dice_micro": 0.015022330491270807,
+        "dice_patient_mean": 0.015263745774681831,
+        "dice_foreground_patients_mean": 0.015263745774681831,
+        "dice_foreground_slices_mean": 0.013914481485012687,
+        "dice_all_slices_mean": 0.004783103010473111,
+        "iou_micro": 0.007568009817958683,
+        "precision_micro": 0.025721237400069517,
+        "recall_micro": 0.01060931899641577,
+        "false_positive_rate": 0.005418383067891199,
+        "patients": 2,
+        "slices": 32,
+        "foreground_patients": 2,
+        "foreground_slices": 11
+      },
+      "per_patient": [
+        {
+          "patient": "BRATS_278",
+          "tp": 26,
+          "fp": 1420,
+          "fn": 1783,
+          "tn": 258915,
+          "probability": 90054.86859676987,
+          "truth": 1809,
+          "intersection": 474.2521003112197,
+          "dice": 0.01597542242703533,
+          "soft_dice": 0.010335879375065318,
+          "foreground_present": true
+        },
+        {
+          "patient": "BRATS_350",
+          "tp": 48,
+          "fp": 1383,
+          "fn": 5118,
+          "tn": 255595,
+          "probability": 91771.25376014458,
+          "truth": 5166,
+          "intersection": 1240.141461447347,
+          "dice": 0.01455206912232833,
+          "soft_dice": 0.025596530024505706,
+          "foreground_present": true
+        }
+      ]
+    },
+    "elapsed_seconds": 2.460714817047119,
+    "initial_weights_sha256": "2e5dc881b5a4ed618289b92cf0c2cf21148a005219d9054777c3c9def1df7eee",
+    "checkpoint_reload_verified": true
+  }
+]

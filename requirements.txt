@@ -1,0 +1,6 @@
+tensorflow==2.16.2
+tf-keras==2.16.0
+numpy==1.26.4
+nibabel==5.4.2
+matplotlib==3.11.2
+pytest>=8,<10

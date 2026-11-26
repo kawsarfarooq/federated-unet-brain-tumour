@@ -1,0 +1,16 @@
+{
+  "all_five_training_configurations_complete": true,
+  "required_experiments": [
+    "central_16",
+    "central_32",
+    "fl_2",
+    "fl_4",
+    "fl_8"
+  ],
+  "checkpoint_reload_verified_for_every_experiment": true,
+  "joint_source_evaluation_complete": true,
+  "single_gpu_at_a_time": true,
+  "completed_utc": "2026-11-25T20:21:44.978611+00:00",
+  "comparison": "comparison.json",
+  "report": "index.html"
+}

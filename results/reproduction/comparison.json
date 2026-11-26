@@ -1,0 +1,156 @@
+{
+  "central_16": {
+    "paper": {
+      "loss": 0.1982,
+      "dice_coef": 0.8034,
+      "soft_dice_coef": 0.3918,
+      "iou_coef": 0.7593,
+      "accuracy": 0.987,
+      "precision": 0.8732,
+      "specificity": 0.9948
+    },
+    "ours": {
+      "loss": 2.2590980529785156,
+      "dice_coef": 0.8316705822944641,
+      "soft_dice_coef": 0.3785518705844879,
+      "iou_coef": 0.7951975464820862,
+      "precision": 0.8876912593841553,
+      "accuracy": 0.98801589012146,
+      "specificity": 0.9951565861701965
+    },
+    "evaluation_source": "central_16/results.json",
+    "difference": {
+      "loss": 2.0608980529785157,
+      "dice_coef": 0.02827058229446411,
+      "soft_dice_coef": -0.013248129415512067,
+      "iou_coef": 0.03589754648208621,
+      "accuracy": 0.0010158901214599725,
+      "precision": 0.014491259384155297,
+      "specificity": 0.0003565861701965156
+    },
+    "executed_steps": 30,
+    "best_step": 30,
+    "elapsed_seconds": 6507.648860216141,
+    "parameters": 1940817
+  },
+  "central_32": {
+    "paper": null,
+    "ours": {
+      "loss": 2.4710891246795654,
+      "dice_coef": 0.8098728060722351,
+      "soft_dice_coef": 0.4235740303993225,
+      "iou_coef": 0.7721412181854248,
+      "precision": 0.8548896908760071,
+      "accuracy": 0.9875175952911377,
+      "specificity": 0.9941961169242859
+    },
+    "evaluation_source": "central_32/results.json",
+    "difference": null,
+    "executed_steps": 29,
+    "best_step": 19,
+    "elapsed_seconds": 3825.4829890727997,
+    "parameters": 7759521
+  },
+  "fl_2": {
+    "paper": {
+      "loss": 3.8979,
+      "dice_coef": 0.6915,
+      "soft_dice_coef": 0.268,
+      "iou_coef": 0.6485,
+      "accuracy": 0.979,
+      "precision": 0.725,
+      "specificity": 0.987
+    },
+    "ours": {
+      "loss": 3.708907127380371,
+      "dice_coef": 0.7557080388069153,
+      "soft_dice_coef": 0.2559499442577362,
+      "iou_coef": 0.7098572254180908,
+      "precision": 0.8414663672447205,
+      "accuracy": 0.98118656873703,
+      "specificity": 0.9943936467170715
+    },
+    "evaluation_source": "joint_evaluation/results.json",
+    "difference": {
+      "loss": -0.18899287261962883,
+      "dice_coef": 0.06420803880691528,
+      "soft_dice_coef": -0.01205005574226381,
+      "iou_coef": 0.061357225418090855,
+      "accuracy": 0.002186568737030048,
+      "precision": 0.11646636724472048,
+      "specificity": 0.007393646717071545
+    },
+    "executed_steps": 200,
+    "best_step": 156,
+    "elapsed_seconds": 1753.4769234657288,
+    "parameters": 1940817
+  },
+  "fl_4": {
+    "paper": {
+      "loss": 3.1142,
+      "dice_coef": 0.7637,
+      "soft_dice_coef": 0.256,
+      "iou_coef": 0.7211,
+      "accuracy": 0.9812,
+      "precision": 0.8653,
+      "specificity": 0.995
+    },
+    "ours": {
+      "loss": 4.353073596954346,
+      "dice_coef": 0.7027863264083862,
+      "soft_dice_coef": 0.25831252336502075,
+      "iou_coef": 0.655921459197998,
+      "precision": 0.7677938938140869,
+      "accuracy": 0.979131817817688,
+      "specificity": 0.9912183284759521
+    },
+    "evaluation_source": "joint_evaluation/results.json",
+    "difference": {
+      "loss": 1.2388735969543458,
+      "dice_coef": -0.060913673591613815,
+      "soft_dice_coef": 0.0023125233650207466,
+      "iou_coef": -0.06517854080200192,
+      "accuracy": -0.002068182182311973,
+      "precision": -0.09750610618591304,
+      "specificity": -0.003781671524047847
+    },
+    "executed_steps": 200,
+    "best_step": 174,
+    "elapsed_seconds": 2357.13640666008,
+    "parameters": 1940817
+  },
+  "fl_8": {
+    "paper": {
+      "loss": 4.5907,
+      "dice_coef": 0.7312,
+      "soft_dice_coef": 0.226,
+      "iou_coef": 0.6872,
+      "accuracy": 0.9788,
+      "precision": 0.8307,
+      "specificity": 0.9938
+    },
+    "ours": {
+      "loss": 5.901674747467041,
+      "dice_coef": 0.5227300524711609,
+      "soft_dice_coef": 0.20983193814754486,
+      "iou_coef": 0.4759780466556549,
+      "precision": 0.5115302205085754,
+      "accuracy": 0.9269723892211914,
+      "specificity": 0.9292572736740112
+    },
+    "evaluation_source": "joint_evaluation/results.json",
+    "difference": {
+      "loss": 1.310974747467041,
+      "dice_coef": -0.20846994752883907,
+      "soft_dice_coef": -0.016168061852455146,
+      "iou_coef": -0.21122195334434513,
+      "accuracy": -0.0518276107788086,
+      "precision": -0.31916977949142455,
+      "specificity": -0.06454272632598879
+    },
+    "executed_steps": 200,
+    "best_step": 190,
+    "elapsed_seconds": 2578.1309583187103,
+    "parameters": 1940817
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "upstream_head": "9255825669277f0c64d80f970cf40b8de83d3901",
+  "final_paper_commit": "b24820953dcd8394b45cf4ea1860876802e1b53d",
+  "files_changed_after_final_paper_commit": [
+    "README.md"
+  ],
+  "research_code_unchanged_after_paper_commit": true
+}

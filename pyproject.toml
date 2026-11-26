@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "brainseg-fl-course"
+version = "0.1.0"
+description = "A coursework implementation and evaluation study of federated U-Net segmentation"
+requires-python = ">=3.12,<3.13"
+dependencies = ["tensorflow==2.16.2", "tf-keras==2.16.0", "numpy==1.26.4", "nibabel>=5.2,<6", "matplotlib>=3.8,<4"]
+
+[project.scripts]
+brainseg-fl = "brainseg_fl.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["brainseg_fl*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
