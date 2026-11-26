@@ -1,15 +1,15 @@
-# Attribution and submission notes
+# Attribution and third-party notices
 
-This package contains newly written modules implementing published U-Net and FedAvg methods. It imports no code from the original reproduction repository and does not bundle its source. The original source was examined during reproduction; this package should not be described as a legally certified clean-room implementation. Methodological inspiration and the original study are credited in REFERENCES.md.
+## Methods and source context
 
-No project-wide LICENSE file was found in the inspected original repository. Its unet_model/model.py contains Intel copyright and Apache-2.0 boilerplate alongside an EPL-2.0 SPDX identifier. Those conflicting notices are not resolved here. The original source and notices were preserved separately. This package does not grant permission to relicense that source or claim it as your own.
+This implementation follows published U-Net and FedAvg methods. The motivating study and its repository are acknowledged in [REFERENCES.md](REFERENCES.md). The implementation does not import or bundle that repository's source. The baseline reproduction records under results/reproduction use a separate source-faithful protocol.
 
-Changing names, titles, formatting, or variable names does not establish independent authorship of existing code. Public availability alone is not a general reuse license; see GitHub's licensing guidance: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository . This is an attribution record, not legal clearance or a promise that the project is copyright-free.
+## Source license notes
 
-No student identity or publication license has been assigned to these new files. Decide on any public distribution license only after checking ownership, course rules, and third-party obligations. Dataset and library licenses remain applicable.
+No project-wide LICENSE file was found in the inspected motivating repository at commit 9255825669277f0c64d80f970cf40b8de83d3901. Its unet_model/model.py contains Intel copyright and Apache-2.0 boilerplate alongside an EPL-2.0 SPDX identifier. These conflicting notices are not resolved here. This repository does not grant permission to relicense that source.
 
-## AI assistance
+## Data and dependencies
 
-The new implementation, documentation, tests, and initial smoke execution were prepared with assistance from OpenAI Codex. Before submitting, follow your instructor's AI policy, describe the assistance accurately, review the implementation, and distinguish your own analysis and changes. Do not describe generated code or the original authors' methods as unaided student work.
+Medical Segmentation Decathlon data is distributed under CC BY-SA 4.0. No medical volumes are bundled here; the illustrative training-data panel is attributed to the dataset in REFERENCES.md and carries the dataset's CC BY-SA 4.0 terms. TensorFlow, tf-keras, NumPy, NiBabel, Matplotlib, and pytest retain their respective licenses.
 
-Possible disclosure, to adapt only if accurate: “I used OpenAI Codex to assist with implementation, testing, and documentation. I reviewed the code and take responsibility for the submitted work. U-Net, FedAvg, the dataset, and the motivating study are cited separately.”
+No repository-wide distribution license has been assigned to the implementation. Source availability does not itself grant a general reuse license. Existing third-party rights and notices remain applicable.

@@ -124,7 +124,7 @@ def run_experiment(options, name, width, pools, client_count=None):
             break
     model.load_weights(str(output / "best.weights.h5"))
     test_report = evaluate(model, test, options.batch_size)
-    result = {"title": TITLE, "scope": "real-data smoke verification" if options.mode == "smoke" else "course-project experiment",
+    result = {"title": TITLE, "scope": "real-data smoke verification" if options.mode == "smoke" else "full experiment",
               "full_dataset_evaluation": options.mode == "full", "experiment": name, "width": width,
               "clients": client_count or 0, "model_parameters": model.count_params(),
               "completed_steps": len(rows), "best_step": best_step, "training_examples_seen": processed_total,
@@ -171,5 +171,5 @@ def execute(options):
         save_json(options.run_dir / "results.json", results)
     from .visuals import learning_curves
     learning_curves(options.run_dir, plans)
-    print("Course-project workflow complete:", options.run_dir, flush=True)
+    print("Experiment workflow complete:", options.run_dir, flush=True)
     return results

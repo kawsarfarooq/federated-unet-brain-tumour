@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description="Federated U-Net course project")
+    parser = argparse.ArgumentParser(description="Federated U-Net segmentation")
     parser.add_argument("--dataset", type=Path, required=True)
     parser.add_argument("--run-dir", type=Path, required=True)
     parser.add_argument("--cache", type=Path, required=True)

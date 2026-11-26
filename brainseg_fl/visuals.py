@@ -1,4 +1,4 @@
-"""Plots for course discussion; foreground metrics and coverage stay explicit."""
+"""Experiment plots with explicit foreground metrics and coverage."""
 import json
 import matplotlib
 matplotlib.use("Agg")
